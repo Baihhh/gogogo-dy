@@ -5,7 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/gin-gonic/gin"
-	// "strconv"
+	"strconv"
 	"time"
 )
 
@@ -37,11 +37,11 @@ func (f *FeedResponse) DoHasToken(token string, c *gin.Context) error {
 		}
 
 		//如果用户为登录状态，则更新该视频是否被该用户点赞的状态
-		_, err = fillFollowAndFavorite(claim.UserId, &f.VideoList)
+		latestTime, err := fillFollowAndFavorite(claim.UserId, &f.VideoList)
 		if err != nil {
 			return err
 		}
-		f.NextTime = time.Now().Unix()
+		f.NextTime = latestTime.Unix()
 		return nil
 	}
 	return nil
@@ -65,14 +65,14 @@ func fillFollowAndFavorite(userId int64, videos *[]*models.Video) (*time.Time, e
 }
 
 func getLastTime(c *gin.Context) (latestTime time.Time) {
-	// rawTimestamp, ok := c.GetQuery("latest_time")
-	// if ok {
-	// 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
-	// 	if err == nil {
-	// 		latestTime = time.Unix(0, intTime)
-	// 		return latestTime
-	// 	}
-	// }
+	rawTimestamp, ok := c.GetQuery("latest_time")
+	if ok {
+		intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
+		if err == nil && intTime != 0 {
+			latestTime = time.Unix(0, intTime)
+			return latestTime
+		}
+	}
 	latestTime = time.Now()
 	return latestTime
 }

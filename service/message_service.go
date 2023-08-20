@@ -2,14 +2,20 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/models"
 	"io"
 	"net"
 	"sync"
+	"sync/atomic"
+	"time"
 )
 
+var messageIdSequence = int64(1)
 var chatConnMap = sync.Map{}
+
+type MessageResponse models.MessageResponse
 
 func RunMessageServer() {
 	listen, err := net.Listen("tcp", "127.0.0.1:9090")
@@ -70,4 +76,52 @@ func process(conn net.Conn) {
 			fmt.Printf("Push message failed: %v\n", err)
 		}
 	}
+}
+
+func MessageSend(userId int64, toUserId int64, content string, actionType string) error {
+	if actionType == "1" {
+		atomic.AddInt64(&messageIdSequence, 1)
+		curMessage := models.Message{
+			//Id:         messageIdSequence,
+			MsgContent: content,
+			CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+			UserId:     userId,
+			ToUserId:   toUserId,
+		}
+		err := send(curMessage)
+		if err != nil {
+			return err
+		}
+		return models.AddMessage(&curMessage)
+
+	} else {
+		return errors.New("不正确的消息类型")
+	}
+	return nil
+}
+
+func send(curMessage models.Message) error {
+	//使用Dial函数和服务端建立连接
+	conn, err := net.Dial("tcp", "127.0.0.1:9090")
+	if err != nil {
+		return err
+	}
+	//最后退出时关闭连接
+	defer conn.Close()
+
+	// 将结构体转换为字节切片
+	jsonData, err := json.Marshal(curMessage)
+	if err != nil {
+		return err
+	}
+	//向服务端发送信息
+	conn.Write(jsonData)
+	return nil
+}
+
+func (q *MessageResponse) GetMessage(userId int64, toUserId int64) error {
+	if userId != toUserId {
+		return models.GetMessages(userId, toUserId, &q.MessageList)
+	}
+	return errors.New("userId 不能相同")
 }

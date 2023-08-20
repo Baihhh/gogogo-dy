@@ -50,3 +50,11 @@ func ValidateNameAndPwd(username string, password string) error {
 	}
 	return nil
 }
+
+//ValidateActionType
+func ValidateActionType(actionType string) error {
+	if actionType != "1" && actionType != "2" {
+		return errors.New("错误的操作类型")
+	}
+	return nil
+}

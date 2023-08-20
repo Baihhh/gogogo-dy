@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gorm.io/gorm"
 	"time"
 	// "gorm.io/gorm"
 )
@@ -21,5 +22,16 @@ type Video struct {
 }
 
 func AddVideo(video *Video) error {
-	return DB.Create(&video).Error
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&video).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&User{}).Where("id = ?", video.AuthorID).UpdateColumn("work_count", gorm.Expr("work_count + ?", 1)).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return err
 }
