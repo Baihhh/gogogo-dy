@@ -13,11 +13,12 @@ var Cfg *ini.File
 var Config Conf
 
 type Conf struct {
-	Url   string
-	Port  string
-	MySql Mysql
-	Jwt   Jwt
-	Redis Redis
+	Url     string
+	Port    string
+	MySql   Mysql
+	Jwt     Jwt
+	Redis   Redis
+	FileExt FileExt
 }
 
 type Redis struct {
@@ -40,6 +41,11 @@ type Jwt struct {
 	JwtTtl int64  `mapstructure:"jwt_ttl" json:"jwt_ttl" yaml:"jwt_ttl"` // token 有效期（秒）
 }
 
+type FileExt struct {
+	VideoExt string
+	ImageExt string
+}
+
 func InitConfig() {
 	var err error
 	// 获取当前工作目录
@@ -55,6 +61,14 @@ func InitConfig() {
 	loadApp()
 	loadMysql()
 	loadRedis()
+	laodFileExt()
+}
+
+func laodFileExt() {
+	Config.FileExt = FileExt{
+		VideoExt: getConfig("fileExt", "videoExt"),
+		ImageExt: getConfig("fileExt", "imageExt"),
+	}
 }
 
 func loadRedis() {
