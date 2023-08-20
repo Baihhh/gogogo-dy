@@ -2,9 +2,12 @@ package utils
 
 import (
 	"errors"
+	"regexp"
+	"strings"
+
+	"github.com/RaymondCode/simple-demo/config"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/go-playground/validator/v10"
-	"regexp"
 )
 
 const (
@@ -12,6 +15,28 @@ const (
 	MaxPasswordLength = 20
 	MinPasswordLength = 8
 )
+
+// 校验视频文件
+func ValidateVideoFile(fileExt string) bool {
+	extensions := strings.Split(config.Config.FileExt.VideoExt, "/")
+	for _, allowedExt := range extensions {
+		if fileExt == allowedExt {
+			return true
+		}
+	}
+	return false
+}
+
+// 校验图像文件
+func ValidateImageFile(fileExt string) bool {
+	extensions := strings.Split(config.Config.FileExt.ImageExt, "/")
+	for _, allowedExt := range extensions {
+		if fileExt == allowedExt {
+			return true
+		}
+	}
+	return false
+}
 
 // ValidateMobile 校验手机号
 func ValidateMobile(fl validator.FieldLevel) bool {
@@ -23,7 +48,7 @@ func ValidateMobile(fl validator.FieldLevel) bool {
 	return true
 }
 
-//ValidateRegister
+// ValidateRegister
 func ValidateRegister(username string, password string, key string) error {
 	if err := ValidateNameAndPwd(username, password); err != nil {
 		return err
@@ -40,7 +65,7 @@ func ValidateRegister(username string, password string, key string) error {
 	return nil
 }
 
-//ValidateNameAndPwd
+// ValidateNameAndPwd
 func ValidateNameAndPwd(username string, password string) error {
 	if username == "" {
 		return errors.New("用户名不能为空")
@@ -54,7 +79,7 @@ func ValidateNameAndPwd(username string, password string) error {
 	return nil
 }
 
-//ValidateActionType
+// ValidateActionType
 func ValidateActionType(actionType string) error {
 	if actionType != "1" && actionType != "2" {
 		return errors.New("错误的操作类型")

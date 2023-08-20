@@ -2,20 +2,29 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/ini.v1"
 	"log"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/ini.v1"
 )
 
 var Cfg *ini.File
 var Config Conf
 
 type Conf struct {
-	Url   string
-	Port  string
-	MySql Mysql
-	Jwt   Jwt
+	Url     string
+	Port    string
+	MySql   Mysql
+	Jwt     Jwt
+	Redis   Redis
+	FileExt FileExt
+}
+
+type Redis struct {
+	Addr     string
+	Password string
+	DB       int
 }
 
 type Mysql struct {
@@ -32,6 +41,11 @@ type Jwt struct {
 	JwtTtl int64  `mapstructure:"jwt_ttl" json:"jwt_ttl" yaml:"jwt_ttl"` // token 有效期（秒）
 }
 
+type FileExt struct {
+	VideoExt string
+	ImageExt string
+}
+
 func InitConfig() {
 	var err error
 	// 获取当前工作目录
@@ -46,6 +60,24 @@ func InitConfig() {
 
 	loadApp()
 	loadMysql()
+	loadRedis()
+	laodFileExt()
+}
+
+func laodFileExt() {
+	Config.FileExt = FileExt{
+		VideoExt: getConfig("fileExt", "videoExt"),
+		ImageExt: getConfig("fileExt", "imageExt"),
+	}
+}
+
+func loadRedis() {
+	db, _ := Cfg.Section("redis").Key("db").Int()
+	Config.Redis = Redis{
+		Addr:     getConfig("redis", "addr"),
+		Password: getConfig("redis", "password"),
+		DB:       db,
+	}
 }
 
 func loadApp() {
