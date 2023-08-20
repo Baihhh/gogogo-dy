@@ -28,6 +28,9 @@ func ValidateRegister(username string, password string, key string) error {
 	if err := ValidateNameAndPwd(username, password); err != nil {
 		return err
 	}
+	if hasSpecialChar(username) {
+		return errors.New("用户名不能包含特殊字符")
+	}
 	if models.IsUserExistByUsername(username) && key == "register" {
 		return errors.New("用户名已经存在")
 	}
@@ -57,4 +60,9 @@ func ValidateActionType(actionType string) error {
 		return errors.New("错误的操作类型")
 	}
 	return nil
+}
+
+func hasSpecialChar(username string) bool {
+	reg := regexp.MustCompile(`[@#%￥&《》<>?:'"{})(*^$!~]`)
+	return reg.MatchString(username)
 }
