@@ -29,14 +29,14 @@ func Publish(c *gin.Context) {
 	}
 	data, err := c.FormFile("data")
 	if err != nil {
-		c.JSON(http.StatusOK, models.Response{
-			StatusCode: 1,
-			StatusMsg:  err.Error(),
-		})
+		models.Fail(c, 1, err.Error())
 		return
 	}
 	title := c.PostForm("title")
-	service.PublishVideo(c, authorId, data, title)
+	if err := service.PublishVideo(c, authorId, data, title); err != nil {
+		models.Fail(c, 1, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, models.Response{
 		StatusCode: 0,
