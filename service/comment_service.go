@@ -18,3 +18,11 @@ func AddComment(userID int64, videoID int64, text string) *models.Comment {
 func DelComment(commentID int64) error {
 	return models.DelComment(commentID)
 }
+
+func CommentList(videoID int64) (commentList []models.Comment, err error) {
+	err = models.DB.Model(&models.Comment{}).Where("Id = ?", videoID).Find(&commentList).Error
+	if err != nil {
+		return nil, err
+	}
+	return commentList, nil
+}

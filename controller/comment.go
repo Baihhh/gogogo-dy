@@ -73,8 +73,23 @@ func CommentAction(c *gin.Context) {
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
+	videoIdStr := c.Query("video_id")
+	videoId, err := strconv.ParseInt(videoIdStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, CommentListResponse{
+			Response:    models.Response{StatusCode: 1, StatusMsg: "视频不存在"},
+			CommentList: nil,
+		})
+	}
+	commentList, err := service.CommentList(videoId)
+	if err != nil {
+		c.JSON(http.StatusOK, CommentListResponse{
+			Response:    models.Response{StatusCode: 1, StatusMsg: "评论加载异常"},
+			CommentList: nil,
+		})
+	}
 	c.JSON(http.StatusOK, CommentListResponse{
 		Response:    models.Response{StatusCode: 0},
-		CommentList: DemoComments,
+		CommentList: commentList,
 	})
 }

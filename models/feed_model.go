@@ -23,3 +23,9 @@ func QueryIsFavorite(videoId int64, userId int64) bool {
 	}
 	return true
 }
+
+func QueryFavoriteByUserID(UserId int64) ([]Favorite, error) {
+	var favorite []Favorite
+	res := DB.Table("favorites").Where("user_id = ?", UserId).Find(&favorite)
+	return favorite, res.Error
+}
