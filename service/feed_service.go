@@ -5,7 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/gin-gonic/gin"
-	"strconv"
+	// "strconv"
 	"time"
 )
 
@@ -65,14 +65,14 @@ func fillFollowAndFavorite(userId int64, videos *[]*models.Video) (*time.Time, e
 }
 
 func getLastTime(c *gin.Context) (latestTime time.Time) {
-	rawTimestamp, ok := c.GetQuery("latest_time")
-	if ok {
-		intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
-		if err == nil {
-			latestTime = time.Unix(0, intTime)
-			return latestTime
-		}
-	}
+	// rawTimestamp, ok := c.GetQuery("latest_time")
+	// if ok {
+	// 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
+	// 	if err == nil {
+	// 		latestTime = time.Unix(0, intTime)
+	// 		return latestTime
+	// 	}
+	// }
 	latestTime = time.Now()
 	return latestTime
 }

@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // Feed same demo video list for every request
@@ -32,6 +34,7 @@ func Feed(c *gin.Context) {
 	}
 	res.StatusCode = 0
 	res.StatusMsg = "ok"
+	fmt.Print(res)
 	c.JSON(http.StatusOK, res)
 
 }

@@ -9,7 +9,7 @@ type User struct {
 	Signature       string `json:"signature" gorm:"column:signature"`
 	FollowCount     int64  `json:"follow_count" gorm:"default:0"`
 	FollowerCount   int64  `json:"follower_count" gorm:"default:0"`
-	IsFollow        bool   `json:"is_follow" gorm:"default:false"`
+	IsFollow        bool   `json:"is_follow" gorm:"-"`
 	TotalFavorited  string `json:"total_favorited" gorm:"default:0"`
 	WorkCount       int64  `json:"work_count" gorm:"default:0"`
 	FavoriteCount   int64  `json:"favorite_count" gorm:"default:0"`

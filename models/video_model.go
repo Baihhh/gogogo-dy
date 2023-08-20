@@ -15,7 +15,7 @@ type Video struct {
 	CoverUrl      string    `json:"cover_url" gorm:"column:cover_url"`
 	FavoriteCount int64     `json:"favorite_count"`
 	CommentCount  int64     `json:"comment_count"`
-	IsFavorite    bool      `json:"is_favorite"`
+	IsFavorite    bool      `json:"is_favorite" gorm:"-"`
 	CreatedAt     time.Time `json:"-" gorm:"column:created_at"`
 	// UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"column:updated_at"`
 }

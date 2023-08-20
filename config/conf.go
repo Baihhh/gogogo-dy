@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/ini.v1"
 	"log"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/ini.v1"
 )
 
 var Cfg *ini.File
@@ -16,6 +17,13 @@ type Conf struct {
 	Port  string
 	MySql Mysql
 	Jwt   Jwt
+	Redis Redis
+}
+
+type Redis struct {
+	Addr     string
+	Password string
+	DB       int
 }
 
 type Mysql struct {
@@ -46,6 +54,16 @@ func InitConfig() {
 
 	loadApp()
 	loadMysql()
+	loadRedis()
+}
+
+func loadRedis() {
+	db, _ := Cfg.Section("redis").Key("db").Int()
+	Config.Redis = Redis{
+		Addr:     getConfig("redis", "addr"),
+		Password: getConfig("redis", "password"),
+		DB:       db,
+	}
 }
 
 func loadApp() {
