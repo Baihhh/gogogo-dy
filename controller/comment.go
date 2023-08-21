@@ -46,7 +46,8 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 		comment := service.AddComment(userID, videoID, text)
-		models.DB.Preload("User").First(comment, comment.Id) //加载评论发布者
+		models.DB.Preload("User").Preload("Video").First(comment, comment.Id) //加载评论发布者
+		comment.Video.CommentCount -= 1
 		c.JSON(http.StatusOK, CommentActionResponse{Response: models.Response{StatusCode: 0, StatusMsg: "添加评论成功"},
 			Comment: models.Comment{
 				Id:        comment.Id,
@@ -66,7 +67,10 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 
-		service.DelComment(commentID)
+		if err := service.DelComment(commentID); err != nil {
+			models.Fail(c, 1, err.Error())
+			return
+		}
 		c.JSON(http.StatusOK, models.Response{StatusCode: 0, StatusMsg: "删除评论成功"})
 	}
 }
