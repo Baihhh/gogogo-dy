@@ -6,9 +6,9 @@ import (
 )
 
 // 点赞列表
-func FavoriteList(userIdInt64 int64) (videoList []models.Video, err error) {
+func FavoriteList(userId int64) (videoList []models.Video, err error) {
 	//var res []models.Video
-	favorites, err := models.QueryFavoriteByUserID(userIdInt64)
+	favorites, err := models.QueryFavoriteByUserID(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -21,6 +21,12 @@ func FavoriteList(userIdInt64 int64) (videoList []models.Video, err error) {
 			return nil, result.Error
 		}
 		fmt.Println(videoIds[i])
+		author := models.User{}
+		res := models.DB.Model(&models.User{}).Where("Id = ?", video.AuthorID).Find(&author)
+		if res == nil {
+			return nil, res.Error
+		}
+		video.Author = author
 		videoList = append(videoList, video)
 	}
 	return videoList, err

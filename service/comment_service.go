@@ -19,10 +19,27 @@ func DelComment(commentID int64) error {
 	return models.DelComment(commentID)
 }
 
+// 评论列表
 func CommentList(videoID int64) (commentList []models.Comment, err error) {
-	err = models.DB.Model(&models.Comment{}).Where("Id = ?", videoID).Find(&commentList).Error
+	comments, err := models.QueryCommentByVideoID(videoID)
 	if err != nil {
 		return nil, err
+	}
+	commentIds := make([]int64, len(comments))
+	for i, comments := range comments {
+		commentIds[i] = comments.Id
+		comment := models.Comment{}
+		result := models.DB.Model(&models.Comment{}).Where("Id = ?", commentIds[i]).Find(&comment)
+		if result == nil {
+			return nil, result.Error
+		}
+		user := models.User{}
+		res := models.DB.Model(&models.User{}).Where("Id = ?", comments.UserID).Find(&user)
+		if res == nil {
+			return nil, res.Error
+		}
+		comment.User = user
+		commentList = append(commentList, comment)
 	}
 	return commentList, nil
 }
