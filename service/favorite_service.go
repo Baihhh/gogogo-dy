@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/RaymondCode/simple-demo/models"
+	"github.com/RaymondCode/simple-demo/config"
 	"github.com/RaymondCode/simple-demo/utils"
 )
 
