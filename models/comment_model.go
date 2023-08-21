@@ -8,7 +8,7 @@ import (
 
 type Comment struct {
 	// gorm.Model
-	Id      int64  `json:"id,omitempty"`
+	Id      int64  `json:"id" gorm:"column:id"`
 	UserID  int64  `json:"-" gorm:"column:user_id"`
 	User    User   `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	VideoID int64  `json:"-" gorm:"column:video_id"`
@@ -20,7 +20,7 @@ type Comment struct {
 
 func AddComment(comment *Comment) error {
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(comment).Error; err != nil {
+		if err := tx.Model(&Comment{}).Create(comment).Error; err != nil {
 			return err
 		}
 		if err := tx.Model(&Video{}).Where("id = ?", comment.VideoID).
@@ -34,7 +34,7 @@ func AddComment(comment *Comment) error {
 
 func DelComment(comment *Comment) error {
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(comment).Error; err != nil {
+		if err := tx.Model(&Comment{}).Delete(comment).Error; err != nil {
 			return err
 		}
 		if err := tx.Model(&Video{}).Where("id = ?", comment.VideoID).
