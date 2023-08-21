@@ -1,8 +1,9 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 	// "gorm.io/gorm"
 )
 
@@ -27,7 +28,8 @@ func AddVideo(video *Video) error {
 			return err
 		}
 
-		if err := tx.Model(&User{}).Where("id = ?", video.AuthorID).UpdateColumn("work_count", gorm.Expr("work_count + ?", 1)).Error; err != nil {
+		if err := tx.Model(&User{}).Where("id = ?", video.AuthorID).
+			UpdateColumn("work_count", gorm.Expr("work_count + ?", 1)).Error; err != nil {
 			return err
 		}
 
