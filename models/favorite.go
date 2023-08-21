@@ -1,8 +1,8 @@
 package main
 
 import (
-	"tiktok/go/config"
-	"tiktok/go/util"
+	"github.com/RaymondCode/simple-demo/config"
+	"github.com/RaymondCode/simple-demo/utils"
 )
 
 // Like 表的结构,不需要json化
