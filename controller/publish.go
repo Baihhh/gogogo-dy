@@ -9,7 +9,7 @@ import (
 
 type VideoListResponse struct {
 	models.Response
-	VideoList []models.Video `json:"video_list"`
+	VideoList []models.Video `json:"video_list, omitempty"`
 }
 
 // Publish check token then save upload file to public directory
