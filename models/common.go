@@ -39,9 +39,3 @@ type Follow struct {
 	//被关注者
 	FollowerUserId int64 `json:"follower_userId,omitempty" gorm:"column:follower_userId"`
 }
-
-// 点赞表
-type Favorite struct {
-	UserId  int64 `json:"user_id" gorm:"column:user_id"`
-	VideoId int64 `json:"video_id,omitempty" gorm:"column:video_id"`
-}

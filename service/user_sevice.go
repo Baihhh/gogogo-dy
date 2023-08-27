@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/RaymondCode/simple-demo/config"
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/RaymondCode/simple-demo/utils"
@@ -24,6 +25,7 @@ func (q *UserLoginResponse) Register(username string, password string) error {
 		Name:      username,
 		Password:  newPassword,
 		Signature: "这里还什么都没有",
+		Avatar:    config.Config.Url + "/static/img/avatar.png",
 	}
 
 	err = models.AddUser(user)

@@ -23,3 +23,21 @@ func QueryIsFavorite(videoId int64, userId int64) bool {
 	}
 	return true
 }
+
+func QueryFavoriteByUserID(UserId int64) ([]Favorite, error) {
+	var favorite []Favorite
+	res := DB.Table("favorites").Where("user_id = ?", UserId).Find(&favorite)
+	return favorite, res.Error
+}
+
+func QueryCommentByVideoID(videoId int64) ([]Comment, error) {
+	var comment []Comment
+	res := DB.Table("comments").Where("video_id = ?", videoId).Find(&comment)
+	return comment, res.Error
+}
+
+func QueryPublishByUserId(UserId int64) ([]Video, error) {
+	var video []Video
+	res := DB.Table("videos").Where("author_id = ?", UserId).Find(&video)
+	return video, res.Error
+}

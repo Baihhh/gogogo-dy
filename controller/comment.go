@@ -11,12 +11,12 @@ import (
 
 type CommentListResponse struct {
 	models.Response
-	CommentList []models.Comment `json:"comment_list,omitempty"`
+	CommentList []models.Comment `json:"comment_list"`
 }
 
 type CommentActionResponse struct {
 	models.Response
-	Comment models.Comment `json:"comment,omitempty"`
+	Comment models.Comment `json:"comment"`
 }
 
 // CommentAction no practical effect, just check if token is valid
@@ -39,15 +39,11 @@ func CommentAction(c *gin.Context) {
 		videoIDStr := c.Query("video_id")
 		videoID, err := strconv.ParseInt(videoIDStr, 10, 64)
 		if err != nil {
-			c.JSON(http.StatusOK, models.Response{
-				StatusCode: 1,
-				StatusMsg:  err.Error(),
-			})
+			models.Fail(c, 1, err.Error())
 			return
 		}
 		comment := service.AddComment(userID, videoID, text)
-		models.DB.Preload("User").Preload("Video").First(comment, comment.Id) //加载评论发布者
-		comment.Video.CommentCount -= 1
+		models.DB.Model(&models.Comment{}).Preload("User").First(comment, comment.Id) //加载评论发布者
 		c.JSON(http.StatusOK, CommentActionResponse{Response: models.Response{StatusCode: 0, StatusMsg: "添加评论成功"},
 			Comment: models.Comment{
 				Id:        comment.Id,
@@ -60,10 +56,7 @@ func CommentAction(c *gin.Context) {
 		commentIDStr := c.Query("comment_id")
 		commentID, err := strconv.ParseInt(commentIDStr, 10, 64)
 		if err != nil {
-			c.JSON(http.StatusOK, models.Response{
-				StatusCode: 1,
-				StatusMsg:  err.Error(),
-			})
+			models.Fail(c, 1, err.Error())
 			return
 		}
 
@@ -77,8 +70,17 @@ func CommentAction(c *gin.Context) {
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
+	videoIdStr := c.Query("video_id")
+	videoId, err := strconv.ParseInt(videoIdStr, 10, 64)
+	if err != nil {
+		models.Fail(c, 1, "视频不存在")
+	}
+	commentList, err := service.CommentList(videoId)
+	if err != nil {
+		models.Fail(c, 1, "评论加载异常")
+	}
 	c.JSON(http.StatusOK, CommentListResponse{
-		Response:    models.Response{StatusCode: 0},
-		CommentList: DemoComments,
+		Response:    models.Response{StatusCode: 0, StatusMsg: "ok"},
+		CommentList: commentList,
 	})
 }
