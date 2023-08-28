@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/RaymondCode/simple-demo/utils"
+	"strconv"
 )
 
 type Response models.Response
@@ -13,12 +15,26 @@ func (q *Response) RelationAction(userId int64, toUserId int64, actionType strin
 	if err != nil {
 		return err
 	}
+
+	if have := models.IsUserExistById(strconv.FormatInt(toUserId, 10)); !have {
+		return errors.New("用户不存在")
+	}
+
+	if toUserId == userId {
+		return errors.New("无法关注自己")
+	}
+
 	//关注
 	if actionType == "1" {
 		follow := models.Follow{
 			FollowUserId:   userId,
 			FollowerUserId: toUserId,
 		}
+
+		if have := models.GetIsFollow(follow); have {
+			return errors.New("已经关注过不能继续关注")
+		}
+		
 		err = models.AddFollow(follow)
 		if err != nil {
 			return err

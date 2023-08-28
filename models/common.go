@@ -13,8 +13,8 @@ type UserInfoResponse struct {
 
 type FeedResponse struct {
 	Response
-	VideoList []*Video `json:"video_list,omitempty"`
-	NextTime  int64    `json:"next_time,omitempty"`
+	VideoList []*Video `json:"video_list"`
+	NextTime  int64    `json:"next_time"`
 }
 
 type MessageSendEvent struct {

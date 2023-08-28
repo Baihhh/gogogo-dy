@@ -2,7 +2,7 @@ package models
 
 type Message struct {
 	Id         int64  `json:"id,omitempty"`
-	MsgContent string `json:"msg_content,omitempty"`
+	MsgContent string `json:"content,omitempty"`
 	CreateTime string `json:"create_time,omitempty"`
 	UserId     int64  `json:"user_id,omitempty"`
 	ToUserId   int64  `json:"to_user_id,omitempty"`

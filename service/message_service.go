@@ -7,6 +7,7 @@ import (
 	"github.com/RaymondCode/simple-demo/models"
 	"io"
 	"net"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -79,6 +80,10 @@ func process(conn net.Conn) {
 }
 
 func MessageSend(userId int64, toUserId int64, content string, actionType string) error {
+	if have := models.IsUserExistById(strconv.FormatInt(toUserId, 10)); !have {
+		return errors.New("用户不存在")
+	}
+
 	if actionType == "1" {
 		atomic.AddInt64(&messageIdSequence, 1)
 		curMessage := models.Message{

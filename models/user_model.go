@@ -26,6 +26,14 @@ func IsUserExistByUsername(username string) bool {
 	return true
 }
 
+func IsUserExistById(id string) bool {
+	user, ok := QueryUserLogin(id, "id")
+	if !ok || user.Id == 0 {
+		return false
+	}
+	return true
+}
+
 func QueryUserLogin(username string, key string) (User, bool) {
 	var user User
 	res := DB.Table("users").Where(key+" = ?", username).First(&user)
