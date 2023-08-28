@@ -36,7 +36,7 @@ func DelFollow(follow Follow) error {
 		if err := tx.Model(&User{}).Where("id = ?", follow.FollowerUserId).UpdateColumn("follower_count", gorm.Expr("follower_count - ?", 1)).Error; err != nil {
 			return err
 		}
-		if err := tx.Model(&User{}).Where("id = ?", follow.FollowUserId).UpdateColumn("follow_count", gorm.Expr("follow_count + ?", 1)).Error; err != nil {
+		if err := tx.Model(&User{}).Where("id = ?", follow.FollowUserId).UpdateColumn("follow_count", gorm.Expr("follow_count - ?", 1)).Error; err != nil {
 			return err
 		}
 
