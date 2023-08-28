@@ -19,6 +19,10 @@ func AddFavorite(userID int64, videoID int64) error {
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error; err != nil {
 			return err
 		}
+		if err := tx.Model(&User{}).Where("id = ?", userID).
+			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error; err != nil {
+			return err
+		}
 		return nil
 	})
 	return err
@@ -30,6 +34,10 @@ func DelFavorite(userID int64, videoID int64) error {
 			return err
 		}
 		if err := tx.Model(&Video{}).Where("id = ?", videoID).
+			UpdateColumn("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&User{}).Where("id = ?", userID).
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error; err != nil {
 			return err
 		}

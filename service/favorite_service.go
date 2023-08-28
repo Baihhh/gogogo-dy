@@ -31,7 +31,7 @@ func FavoriteList(userId int64) (videoList []models.Video, err error) {
 	for i, favorites := range favorites {
 		videoIds[i] = favorites.VideoID
 		video := models.Video{}
-		result := models.DB.Model(&models.Video{}).Preload("User").Where("id = ?", videoIds[i]).Find(&video)
+		result := models.DB.Model(&models.Video{}).Preload("Author").Where("id = ?", videoIds[i]).Find(&video)
 		if result == nil {
 			return nil, result.Error
 		}
