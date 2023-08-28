@@ -19,6 +19,16 @@ func AddFavorite(userID int64, videoID int64) error {
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error; err != nil {
 			return err
 		}
+
+		// user.TotalFavorited加一
+		user := &User{}
+		if err := tx.Model(&Video{}).Select("users.*").Where("videos.id = ?", videoID).
+			Joins("left join users on users.id = videos.author_id").First(user).Error; err != nil {
+			return err
+		}
+		user.TotalFavorited += 1
+		tx.Save(user)
+
 		if err := tx.Model(&User{}).Where("id = ?", userID).
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error; err != nil {
 			return err
@@ -37,6 +47,16 @@ func DelFavorite(userID int64, videoID int64) error {
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error; err != nil {
 			return err
 		}
+
+		// user.TotalFavorited减一
+		user := &User{}
+		if err := tx.Model(&Video{}).Select("users.*").Where("videos.id = ?", videoID).
+			Joins("left join users on users.id = videos.author_id").First(user).Error; err != nil {
+			return err
+		}
+		user.TotalFavorited -= 1
+		tx.Save(user)
+
 		if err := tx.Model(&User{}).Where("id = ?", userID).
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error; err != nil {
 			return err

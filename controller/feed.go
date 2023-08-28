@@ -17,7 +17,7 @@ func Feed(c *gin.Context) {
 	res := &service.FeedResponse{}
 	res.VideoList = []*models.Video{}
 	//没有token
-	if !ok {
+	if !ok || token == "" {
 		err := res.DoNoToken(c)
 		if err != nil {
 			models.Fail(c, 1, err.Error())

@@ -1,13 +1,11 @@
 package controller
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type UserListResponse struct {
@@ -28,11 +26,6 @@ func RelationAction(c *gin.Context) {
 	userId, ok := rawId.(int64) //保证id是string
 	if !ok {
 		models.Fail(c, 1, "user_id不是int64类型")
-		return
-	}
-
-	if toUserId == strconv.FormatInt(userId, 10) {
-		c.JSON(http.StatusOK, models.Response{StatusCode: 1, StatusMsg: "无法关注自己"})
 		return
 	}
 
@@ -60,8 +53,10 @@ func FollowList(c *gin.Context) {
 		return
 	}
 
+	toUserId := c.Query("user_id")
+
 	res := &service.FollowResponse{}
-	err := res.GetFollowList(userId, "follow_userId", "follower_userId")
+	err := res.GetFollowList(userId, utils.StringToInt(toUserId), "follow_userId", "follower_userId")
 	if err != nil {
 		models.Fail(c, 1, err.Error())
 		return
@@ -84,8 +79,10 @@ func FollowerList(c *gin.Context) {
 		return
 	}
 
+	toUserId := c.Query("user_id")
+
 	res := &service.FollowResponse{}
-	err := res.GetFollowList(userId, "follower_userId", "follow_userId")
+	err := res.GetFollowList(userId, utils.StringToInt(toUserId), "follower_userId", "follow_userId")
 	if err != nil {
 		models.Fail(c, 1, err.Error())
 		return

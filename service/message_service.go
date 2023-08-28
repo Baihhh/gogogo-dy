@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/models"
 	"io"
 	"net"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/RaymondCode/simple-demo/models"
 )
 
 var messageIdSequence = int64(1)
@@ -30,7 +32,6 @@ func RunMessageServer() {
 			fmt.Printf("Accept conn failed: %v\n", err)
 			continue
 		}
-
 		go process(conn)
 	}
 }
@@ -79,13 +80,17 @@ func process(conn net.Conn) {
 }
 
 func MessageSend(userId int64, toUserId int64, content string, actionType string) error {
+	if have := models.IsUserExistById(strconv.FormatInt(toUserId, 10)); !have {
+		return errors.New("用户不存在")
+	}
+
 	if actionType == "1" {
 		atomic.AddInt64(&messageIdSequence, 1)
 		curMessage := models.Message{
 			//Id:         messageIdSequence,
-			MsgContent: content,
+			Content:    content,
 			CreateTime: time.Now().Format("2006-01-02 15:04:05"),
-			UserId:     userId,
+			FromUserId: userId,
 			ToUserId:   toUserId,
 		}
 		err := send(curMessage)

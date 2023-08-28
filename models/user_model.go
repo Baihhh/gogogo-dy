@@ -10,7 +10,7 @@ type User struct {
 	FollowCount     int64  `json:"follow_count" gorm:"default:0"`
 	FollowerCount   int64  `json:"follower_count" gorm:"default:0"`
 	IsFollow        bool   `json:"is_follow" gorm:"-"`
-	TotalFavorited  string `json:"total_favorited" gorm:"default:0"`
+	TotalFavorited  int64  `json:"total_favorited" gorm:"default:0"`
 	WorkCount       int64  `json:"work_count" gorm:"default:0"`
 	FavoriteCount   int64  `json:"favorite_count" gorm:"default:0"`
 }
@@ -20,6 +20,14 @@ func AddUser(user *User) error {
 }
 func IsUserExistByUsername(username string) bool {
 	user, ok := QueryUserLogin(username, "name")
+	if !ok || user.Id == 0 {
+		return false
+	}
+	return true
+}
+
+func IsUserExistById(id string) bool {
+	user, ok := QueryUserLogin(id, "id")
 	if !ok || user.Id == 0 {
 		return false
 	}
@@ -37,7 +45,7 @@ func QueryUserLogin(username string, key string) (User, bool) {
 
 func QueryIsFollow(userId int64, myUserId int64) bool {
 	var follow Follow
-	res := DB.Table("follows").Where("follow_userId = ? and follower_userId = ?", myUserId, userId).First(&follow)
+	res := DB.Table("follows").Where("follow_userId = ? and follower_userId = ?", userId, myUserId).First(&follow)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return false
 	}

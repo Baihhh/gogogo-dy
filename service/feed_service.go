@@ -2,17 +2,18 @@ package service
 
 import (
 	"errors"
+	"strconv"
+	"time"
+
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/gin-gonic/gin"
-	"strconv"
-	"time"
 )
 
 type FeedResponse models.FeedResponse
 
 const (
-	MaxVideoNum = 30
+	MaxVideoNum = 1
 )
 
 func (f *FeedResponse) DoNoToken(c *gin.Context) error {
@@ -21,7 +22,10 @@ func (f *FeedResponse) DoNoToken(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	f.NextTime = lastTime.Unix()
+	if len(f.VideoList) != 0 {
+		lastTime = f.VideoList[(len(f.VideoList) - 1)].CreatedAt
+	}
+	f.NextTime = lastTime.Unix() * 1e3
 	return nil
 }
 
@@ -41,7 +45,10 @@ func (f *FeedResponse) DoHasToken(token string, c *gin.Context) error {
 		if err != nil {
 			return err
 		}
-		f.NextTime = latestTime.Unix()
+		if len(f.VideoList) != 0 {
+			latestTime = &f.VideoList[(len(f.VideoList) - 1)].CreatedAt
+		}
+		f.NextTime = latestTime.Unix() * 1e3
 		return nil
 	}
 	return nil
@@ -69,7 +76,7 @@ func getLastTime(c *gin.Context) (latestTime time.Time) {
 	if ok {
 		intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
 		if err == nil && intTime != 0 {
-			latestTime = time.Unix(0, intTime)
+			latestTime = time.Unix(intTime/1e3, 0)
 			return latestTime
 		}
 	}

@@ -68,8 +68,10 @@ func GetFriend(userId int64, followList *[]*User) error {
 			followerIds = append(followerIds, follow.FollowerUserId)
 		}
 	}
-	return DB.Model(&User{}).Where("id in ?", followerIds).Find(&followList).Error
+	res = DB.Model(&User{}).Where("id in ?", followerIds).Find(&followList)
+	return res.Error
 }
+
 func IsFriend(userId int64, toUserId int64) (bool, error) {
 	var follow Follow
 	res1 := DB.Model(&Follow{}).Where("follow_userId = ? and follower_userId = ?", userId, toUserId).First(&follow)
@@ -84,4 +86,15 @@ func IsFriend(userId int64, toUserId int64) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func GetIsFollow(follow Follow) bool {
+	res1 := DB.Model(&Follow{}).Where("follow_userId = ? and follower_userId = ?", follow.FollowUserId, follow.FollowerUserId).First(&follow)
+	if res1.Error != nil {
+		return false
+	}
+	if res1.RowsAffected != 0 {
+		return true
+	}
+	return false
 }
