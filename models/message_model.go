@@ -1,11 +1,11 @@
 package models
 
 type Message struct {
-	Id         int64  `json:"id,omitempty"`
-	MsgContent string `json:"content,omitempty"`
-	CreateTime string `json:"create_time,omitempty"`
-	UserId     int64  `json:"user_id,omitempty"`
-	ToUserId   int64  `json:"to_user_id,omitempty"`
+	Id         int64  `json:"id"`
+	Content    string `json:"content"`
+	CreateTime string `json:"create_time"`
+	FromUserId int64  `json:"from_user_id"`
+	ToUserId   int64  `json:"to_user_id"`
 }
 
 func AddMessage(message *Message) error {
@@ -13,5 +13,5 @@ func AddMessage(message *Message) error {
 }
 
 func GetMessages(userId int64, toUserId int64, messageList *[]*Message) error {
-	return DB.Model(&Message{}).Where("user_id = ? and to_user_id = ?", userId, toUserId).Find(&messageList).Error
+	return DB.Model(&Message{}).Where("from_user_id = ? and to_user_id = ?", userId, toUserId).Find(&messageList).Error
 }

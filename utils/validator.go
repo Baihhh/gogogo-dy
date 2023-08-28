@@ -88,6 +88,6 @@ func ValidateActionType(actionType string) error {
 }
 
 func hasSpecialChar(username string) bool {
-	reg := regexp.MustCompile(`[@#%￥&《》<>?:'"{})(*^$!~]`)
+	reg := regexp.MustCompile(`[#%￥&《》<>?:'"{})(*^$!~]`)
 	return reg.MatchString(username)
 }

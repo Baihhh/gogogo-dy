@@ -53,8 +53,10 @@ func FollowList(c *gin.Context) {
 		return
 	}
 
+	toUserId := c.Query("user_id")
+
 	res := &service.FollowResponse{}
-	err := res.GetFollowList(userId, "follow_userId", "follower_userId")
+	err := res.GetFollowList(userId, utils.StringToInt(toUserId), "follow_userId", "follower_userId")
 	if err != nil {
 		models.Fail(c, 1, err.Error())
 		return
@@ -77,8 +79,10 @@ func FollowerList(c *gin.Context) {
 		return
 	}
 
+	toUserId := c.Query("user_id")
+
 	res := &service.FollowResponse{}
-	err := res.GetFollowList(userId, "follower_userId", "follow_userId")
+	err := res.GetFollowList(userId, utils.StringToInt(toUserId), "follower_userId", "follow_userId")
 	if err != nil {
 		models.Fail(c, 1, err.Error())
 		return
