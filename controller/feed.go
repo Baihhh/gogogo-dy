@@ -13,7 +13,6 @@ import (
 func Feed(c *gin.Context) {
 	// 不会报错
 	token, ok := c.GetQuery("token")
-
 	res := &service.FeedResponse{}
 	res.VideoList = []*models.Video{}
 	//没有token

@@ -6,6 +6,7 @@ import (
 
 	"github.com/RaymondCode/simple-demo/models"
 	"github.com/RaymondCode/simple-demo/service"
+	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,7 +67,8 @@ func FavoriteList(c *gin.Context) {
 		models.Fail(c, 1, "用户名ID解析出错")
 		return
 	}
-	videoList, err := service.FavoriteList(myUserId.(int64))
+	userId := c.Query("user_id")
+	videoList, err := service.FavoriteList(utils.StringToInt(userId))
 	if err != nil {
 		models.Fail(c, 1, "视频错误")
 	}
