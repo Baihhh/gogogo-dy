@@ -13,7 +13,7 @@ import (
 type FeedResponse models.FeedResponse
 
 const (
-	MaxVideoNum = 1
+	MaxVideoNum = 10
 )
 
 func (f *FeedResponse) DoNoToken(c *gin.Context) error {
@@ -24,7 +24,10 @@ func (f *FeedResponse) DoNoToken(c *gin.Context) error {
 	}
 	if len(f.VideoList) != 0 {
 		lastTime = f.VideoList[(len(f.VideoList) - 1)].CreatedAt
+	} else {
+		lastTime = time.Now()
 	}
+
 	f.NextTime = lastTime.Unix() * 1e3
 	return nil
 }
@@ -41,12 +44,15 @@ func (f *FeedResponse) DoHasToken(token string, c *gin.Context) error {
 		}
 
 		//如果用户为登录状态，则更新该视频是否被该用户点赞的状态
-		latestTime, err := fillFollowAndFavorite(claim.UserId, &f.VideoList)
+		err = fillFollowAndFavorite(claim.UserId, &f.VideoList)
 		if err != nil {
 			return err
 		}
+		var latestTime time.Time
 		if len(f.VideoList) != 0 {
-			latestTime = &f.VideoList[(len(f.VideoList) - 1)].CreatedAt
+			latestTime = f.VideoList[(len(f.VideoList) - 1)].CreatedAt
+		} else {
+			latestTime = time.Now()
 		}
 		f.NextTime = latestTime.Unix() * 1e3
 		return nil
@@ -54,13 +60,12 @@ func (f *FeedResponse) DoHasToken(token string, c *gin.Context) error {
 	return nil
 }
 
-func fillFollowAndFavorite(userId int64, videos *[]*models.Video) (*time.Time, error) {
+func fillFollowAndFavorite(userId int64, videos *[]*models.Video) error {
 	size := len(*videos)
-	if videos == nil || size == 0 {
-		return nil, errors.New("没有可以播放的视频")
-	}
+	// if videos == nil || size == 0 {
+	// 	return nil, errors.New("没有可以播放的视频")
+	// }
 
-	latestTime := (*videos)[size-1].CreatedAt //获取最近的投稿时间
 	for i := 0; i < size; i++ {
 		(*videos)[i].Author.IsFollow = models.QueryIsFollow((*videos)[i].Author.Id, userId)
 		//填充有登录信息的点赞状态
@@ -68,7 +73,7 @@ func fillFollowAndFavorite(userId int64, videos *[]*models.Video) (*time.Time, e
 			(*videos)[i].IsFavorite = models.QueryIsFavorite((*videos)[i].Id, userId)
 		}
 	}
-	return &latestTime, nil
+	return nil
 }
 
 func getLastTime(c *gin.Context) (latestTime time.Time) {
